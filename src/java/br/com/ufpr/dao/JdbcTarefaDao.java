@@ -22,20 +22,17 @@ public class JdbcTarefaDao {
 
     private Connection connection;
 
-    public JdbcTarefaDao(Connection connection) {
-
-        this.connection = connection;
-    }
-
+    
     public JdbcTarefaDao() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.connection = (new MysqlConectionFactory()).getConnection();
+        System.out.println("connection construido ================");
     }
 
 public void adiciona(Tarefa tarefa) {
 
         String sql = "insert into tarefa " + "(descricao,finalizado,dataFinalizacao)" + "values (?,?,?)";
         try {
-            PreparedStatement stmt = connection.prepareStatement(sql);
+            PreparedStatement stmt = this.connection.prepareStatement(sql);
             
             stmt.setString(1, tarefa.getDescricao());
             stmt.setBoolean(2, tarefa.getFinalizado());
@@ -48,6 +45,7 @@ public void adiciona(Tarefa tarefa) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             throw new RuntimeException();
+            
         }
     }
 
