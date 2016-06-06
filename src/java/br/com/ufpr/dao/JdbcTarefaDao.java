@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 import br.com.ufpr.jdbc.MysqlConectionFactory;
+import java.util.ArrayList;
 
 /**
  *
@@ -82,7 +83,42 @@ public Tarefa buscaTarefa(Long id) {
 
     }
 
+ public ArrayList<Tarefa> getLista() {
+        ArrayList<Tarefa> listaTarefas = new ArrayList<Tarefa>();
 
+        String sql = "select * from tarefa ";
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet select = stmt.executeQuery();
+            while (select.next()) {
+                Tarefa tarefa = new Tarefa();
+                tarefa.setId(select.getLong("id"));
+                tarefa.setDescricao(select.getString("descricao"));
+                tarefa.setFinalizado(select.getBoolean("finalizado"));
+                //tarefa.setDataFinalizacao(select.getString("dataFinalizacao"));
+
+                Date datafinalizacaoDate = select.getDate("datafinalizacao");
+
+                Calendar dataFinalizacao = Calendar.getInstance();
+                dataFinalizacao.setTime(datafinalizacaoDate);
+                tarefa.setDataFinalizacao(dataFinalizacao);
+                listaTarefas.add(tarefa);
+            }
+
+            select.close();
+            // stmt.execute();
+            stmt.close();
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+
+        return listaTarefas;
+
+    }
 
 
 
