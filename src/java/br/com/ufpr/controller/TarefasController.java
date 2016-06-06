@@ -8,8 +8,10 @@ package br.com.ufpr.controller;
 import br.com.ufpr.dao.JdbcTarefaDao;
 import br.com.ufpr.modelo.Tarefa;
 import java.sql.Connection;
+import javax.validation.Valid;
 import org.springframework.stereotype.Controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -19,21 +21,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class TarefasController {
 
-    
-    
-     @RequestMapping("/novaTarefa")
-    public String formulario(){
+    @RequestMapping("/novaTarefa")
+    public String formulario() {
         System.out.println("criando tarefa");
         return "formulario";  //retorna o nome da pagina .jsp em WEB-INF/views
-        
-        
+
     }
-    
-    
+
     @RequestMapping("/adicionaTarefa")
-    public String adiciona(Tarefa tarefa) {
-        System.out.println(tarefa);
-        
+    public String adiciona(@Valid Tarefa tarefa, BindingResult result) {
+
+        if (result.hasFieldErrors("descricao")) {
+
+            return "formulario";
+        }  //verifica erro em descricao
+
         JdbcTarefaDao dao = new JdbcTarefaDao();
         dao.adiciona(tarefa);
         return "tarefa-adicionada";

@@ -2,6 +2,9 @@ package br.com.ufpr.modelo;
 
 
 import java.util.Calendar;
+import java.util.Locale;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -15,14 +18,26 @@ import java.util.Calendar;
 public class Tarefa {
 
     private Long id;
+    @NotNull(message="{tarefa.descricao.vazia}")
+    @Size(min=5, message="{tarefa.descricao.tamanhoErrado}")
     private String descricao;
-    private boolean finalizado;
-    private Calendar dataFinalizacao;
+    private boolean finalizado=false;
+    private Calendar dataFinalizacao = Calendar.getInstance();
 
+    public Tarefa() {
+        
+        
+    }
+   //necessita do construtor vazio e de todos os Getters e Setters para funcionar, pois eh uma JavaBeans
+     
+
+  
+    
     public Long getId() {
         return this.id;
+   
     }
-
+    
     public String getDescricao() {
         return this.descricao;
     }
