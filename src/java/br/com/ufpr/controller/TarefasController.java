@@ -12,6 +12,7 @@ import java.util.List;
 import javax.validation.Valid;
 import org.springframework.stereotype.Controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.portlet.ModelAndView;
@@ -42,16 +43,11 @@ public class TarefasController {
         dao.adiciona(tarefa);
         return "tarefa-adicionada";
     }
-    
-    @RequestMapping("/listarTarefas")
-    public ModelAndView listar() {
 
-      
+    @RequestMapping("/listarTarefas")
+    public String listar(Model model) {
         JdbcTarefaDao dao = new JdbcTarefaDao();
-        List<Tarefa> tarefas = dao.getLista();
-        ModelAndView mv = new ModelAndView("lista");
-        mv.addObject(tarefas);
-        
-        return mv;
+        model.addAttribute("tarefas", dao.getLista());
+        return "listarTarefas";
     }
 }
