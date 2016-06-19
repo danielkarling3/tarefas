@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Locale;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -22,7 +23,8 @@ public class Tarefa {
     @Size(min=5, message="{tarefa.descricao.tamanhoErrado}")
     private String descricao;
     private boolean finalizado=false;
-    private Calendar dataFinalizacao = Calendar.getInstance();
+    @DateTimeFormat(pattern="dd/M/yyyy")
+    private Calendar dataFinalizacao;
 
     public Tarefa() {
         

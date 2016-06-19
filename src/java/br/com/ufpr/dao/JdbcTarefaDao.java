@@ -23,21 +23,20 @@ public class JdbcTarefaDao {
 
     private Connection connection;
 
-    
     public JdbcTarefaDao() {
         this.connection = (new MysqlConectionFactory()).getConnection();
         System.out.println("connection construido ================");
     }
 
-public void adiciona(Tarefa tarefa) {
+    public void adiciona(Tarefa tarefa) {
 
-        String sql = "insert into tarefa " + "(descricao,finalizado,dataFinalizacao)" + "values (?,?,?)";
+        String sql = "insert into tarefa " + "(descricao,finalizado)" + "values (?,?)";
         try {
             PreparedStatement stmt = this.connection.prepareStatement(sql);
-            
+
             stmt.setString(1, tarefa.getDescricao());
-            stmt.setBoolean(2, tarefa.getFinalizado());
-            stmt.setDate(3, new java.sql.Date(tarefa.getDataFinalizacao().getTimeInMillis()));
+            stmt.setBoolean(2, false);
+            // stmt.setDate(3, new java.sql.Date(tarefa.getDataFinalizacao().getTimeInMillis()));
 
             stmt.execute();
             stmt.close();
@@ -46,13 +45,13 @@ public void adiciona(Tarefa tarefa) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             throw new RuntimeException();
-            
+
         }
     }
 
-public Tarefa buscaTarefa(Long id) {
+    public Tarefa buscaTarefa(Long id) {
         Tarefa tarefa = new Tarefa();
-        String sql = "select * from contatos where id =" + id;
+        String sql = "select * from tarefa where id =" + id;
 
         try {
             PreparedStatement stmt = connection.prepareStatement(sql);
@@ -61,13 +60,14 @@ public Tarefa buscaTarefa(Long id) {
                 tarefa.setId(select.getLong("id"));
                 tarefa.setDescricao(select.getString("descricao"));
                 tarefa.setFinalizado(select.getBoolean("finalizado"));
-                
 
-                Date dataFinalizado = select.getDate("dataFinalizacao");
+                if (tarefa.getDataFinalizacao() != null) {
+                    Date dataFinalizado = select.getDate("dataFinalizacao");
 
-                Calendar dataFinalizacao = Calendar.getInstance();
-                dataFinalizacao.setTime(dataFinalizado);
-                tarefa.setDataFinalizacao(dataFinalizacao);
+                    Calendar dataFinalizacao = Calendar.getInstance();
+                    dataFinalizacao.setTime(dataFinalizado);
+                    tarefa.setDataFinalizacao(dataFinalizacao);
+                }
             }
 
             select.close();
@@ -83,7 +83,7 @@ public Tarefa buscaTarefa(Long id) {
 
     }
 
- public ArrayList<Tarefa> getLista() {
+    public ArrayList<Tarefa> getLista() {
         ArrayList<Tarefa> listaTarefas = new ArrayList<Tarefa>();
 
         String sql = "select * from tarefa ";
@@ -97,12 +97,13 @@ public Tarefa buscaTarefa(Long id) {
                 tarefa.setDescricao(select.getString("descricao"));
                 tarefa.setFinalizado(select.getBoolean("finalizado"));
                 //tarefa.setDataFinalizacao(select.getString("dataFinalizacao"));
+                if (tarefa.getDataFinalizacao() != null) {
+                    Date datafinalizacaoDate = select.getDate("datafinalizacao");
 
-                Date datafinalizacaoDate = select.getDate("datafinalizacao");
-
-                Calendar dataFinalizacao = Calendar.getInstance();
-                dataFinalizacao.setTime(datafinalizacaoDate);
-                tarefa.setDataFinalizacao(dataFinalizacao);
+                    Calendar dataFinalizacao = Calendar.getInstance();
+                    dataFinalizacao.setTime(datafinalizacaoDate);
+                    tarefa.setDataFinalizacao(dataFinalizacao);
+                }
                 listaTarefas.add(tarefa);
             }
 
@@ -120,8 +121,77 @@ public Tarefa buscaTarefa(Long id) {
 
     }
 
+    public void remover(Tarefa tarefa) {
+        String sql = "delete from tarefa where id =" + tarefa.getId();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.execute();
+            stmt.close();
 
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
 
+    }
 
+    public void alterar(Tarefa tarefa) throws SQLException {
+        if (tarefa.getDataFinalizacao() != null) {
+            String sql = "update tarefa set descricao=?,finalizado=?, dataFinalizacao=? where id ="
+                    + tarefa.getId();
+            
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, tarefa.getDescricao());
+            stmt.setBoolean(2, tarefa.getFinalizado());
+             stmt.setDate(3, new java.sql.Date(tarefa.getDataFinalizacao().getTimeInMillis()));
+              stmt.execute();
+            stmt.close();
+        } else {
+            String sql = "update tarefa set descricao=?,finalizado=? where id ="
+                    + tarefa.getId();
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, tarefa.getDescricao());
+                stmt.setBoolean(2, tarefa.getFinalizado());
+                stmt.execute();
+            }
+        }
+        
+
+    }
+
+    public Tarefa buscaPorId(Long id) {
+        Tarefa tarefa = new Tarefa();
+        String sql = "select * from contatos where id =" + id;
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet select = stmt.executeQuery();
+            while (select.next()) {
+                tarefa.setId(select.getLong("id"));
+                tarefa.setDescricao(select.getString("descricao"));
+                tarefa.setFinalizado(select.getBoolean("finalizado"));
+
+                if (tarefa.getDataFinalizacao() != null) {
+                    Date dataFinalizado = select.getDate("dataFinalizacao");
+
+                    Calendar dataFinalizacao = Calendar.getInstance();
+                    dataFinalizacao.setTime(dataFinalizado);
+                    tarefa.setDataFinalizacao(dataFinalizacao);
+                }
+            }
+
+            select.close();
+            // stmt.execute();
+            stmt.close();
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+        return tarefa;
+
+    }
 
 }
