@@ -11,7 +11,7 @@
     <head>
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Listar Contatos</title>
+        <title>Listar Tarefas</title>
         <link rel="stylesheet" href="css/bootstrap.min.css">        
 
         <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -42,12 +42,12 @@
                         </tr> 
 
                         <c:forEach items="${tarefas}" var="tarefa">
-                            <tr>
+                            <tr id="tarefa_"+${tarefa.id}>
                                 <td>${tarefa.id}</td>
                                 <td>${tarefa.descricao}</td>
                                 <c:if test="${tarefa.finalizado eq false}">
 
-                                    <td id="tarefa_${tarefa.id}">
+                                    <td id="tarefafinalizada_${tarefa.id}">
                                         <a href="#" onclick="finalizarAgora(${tarefa.id})">Finalizar Agora</a>
                                     </td>
 
@@ -87,12 +87,9 @@
 
                     <script type="text/javascript">
                         function finalizarAgora(id) {
-                            $.get("finalizarTarefa?id=" + id, function (dadosDeResposta) {
-                                alert("Tarefa Finalizada!");
-                                $("#tarefa_" + id).html("Finalizado");
-                                $("#data_" + id).html(dadosDeResposta);
-
-                                //document.getElementById("tarefa_"+id).innerHTML="Finalizado";
+                            $.post("finalizarTarefa", {'id':id} function(dadosDeResposta) {
+                                alert("Tarefa Finalizada!"+ dadosDeResposta);
+                                $("#tarefa_"+id).html(dadosDeResposta);
                             });
 
                         }
