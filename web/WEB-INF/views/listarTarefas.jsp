@@ -87,7 +87,7 @@
 
                     <script type="text/javascript">
                         function finalizarAgora(id) {
-                            $.post("finalizarTarefa", {'id':id} function(dadosDeResposta) {
+                            $.post("finalizarTarefa", {'id':id}, function(dadosDeResposta) {
                                 alert("Tarefa Finalizada!"+ dadosDeResposta);
                                 $("#tarefa_"+id).html(dadosDeResposta);
                             });
