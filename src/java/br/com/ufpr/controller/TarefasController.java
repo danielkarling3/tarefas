@@ -9,6 +9,7 @@ import br.com.ufpr.dao.JdbcTarefaDao;
 import br.com.ufpr.modelo.Tarefa;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
@@ -27,19 +28,19 @@ import org.springframework.web.portlet.ModelAndView;
  */
 @Controller
 public class TarefasController {
-    
+
     @RequestMapping("/novaTarefa")
     public String formulario() {
         System.out.println("criando tarefa");
         return "formulario";  //retorna o nome da pagina .jsp em WEB-INF/views
 
     }
-    
+
     @RequestMapping("/adicionaTarefa")
     public String adiciona(@Valid Tarefa tarefa, BindingResult result) {
-        
+
         if (result.hasFieldErrors("descricao")) {
-            
+
             return "formulario";
         }  //verifica erro em descricao
 
@@ -47,61 +48,58 @@ public class TarefasController {
         dao.adiciona(tarefa);
         return "redirect:listarTarefas";
     }
-    
+
     @RequestMapping("/listarTarefas")
     public String listar(Model model) {
         JdbcTarefaDao dao = new JdbcTarefaDao();
         model.addAttribute("tarefas", dao.getLista());
         return "listarTarefas";
     }
-    
+
     @RequestMapping("/removerTarefa")
     public String remover(Tarefa tarefa) {
         JdbcTarefaDao dao = new JdbcTarefaDao();
         dao.remover(tarefa);
         return "redirect:listarTarefas";
     }
-    
+
     @RequestMapping("/mostraTarefa")
     public String mostra(Long id, Model model) {
         JdbcTarefaDao dao = new JdbcTarefaDao();
         Tarefa tarefa = dao.buscaTarefa(id);
         model.addAttribute("tarefa", tarefa);
-        
+
         return "formularioAltera";
     }
-    
+
     @RequestMapping("/alteraTarefa")
     public String altera(Tarefa tarefa) throws SQLException {
         JdbcTarefaDao dao = new JdbcTarefaDao();
         dao.alterar(tarefa);
-        
+
         return "redirect:listarTarefas";
     }
-    
-    @RequestMapping("/finalizarTarefa")
-    public void finaliza(Long id, HttpServletResponse response, Model model) throws SQLException {
-        JdbcTarefaDao dao = new JdbcTarefaDao();
-        Tarefa tarefa = dao.buscaTarefa(id);
-        tarefa.setFinalizado(true);
-        tarefa.setDataFinalizacao(Calendar.getInstance());
-        dao.alterar(tarefa);
-        model.addAttribute("tarefa", tarefa.getDataFinalizacao());
-        response.setStatus(200);
-    }
-   
-    
-    
-//     @RequestMapping("/finalizarTarefa")
-//    public String finaliza(Long id, Model model) {
+
+//    @RequestMapping("/finalizarTarefa")
+//    public void finaliza(Long id, HttpServletResponse response, Model model) throws SQLException {
 //        JdbcTarefaDao dao = new JdbcTarefaDao();
 //        Tarefa tarefa = dao.buscaTarefa(id);
 //        tarefa.setFinalizado(true);
 //        tarefa.setDataFinalizacao(Calendar.getInstance());
 //        dao.alterar(tarefa);
-//        model.addAttribute("tarefa", dao.buscaTarefa(id));
-//        return "dataFinalizada";
-//        
+//        model.addAttribute("tarefa", tarefa.getDataFinalizacao());
+//        response.setStatus(200);
 //    }
-    
+    @RequestMapping("/finalizarTarefa")
+    public String finaliza(Long id, Model model) throws SQLException {
+        JdbcTarefaDao dao = new JdbcTarefaDao();
+        Tarefa tarefa = dao.buscaTarefa(id);
+        tarefa.setFinalizado(true);
+        tarefa.setDataFinalizacao(Calendar.getInstance());
+        dao.alterar(tarefa);
+        model.addAttribute("tarefa", tarefa);
+        return "finalizado";
+
+    }
+
 }

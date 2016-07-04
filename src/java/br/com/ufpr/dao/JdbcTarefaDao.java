@@ -144,7 +144,7 @@ public class JdbcTarefaDao {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, tarefa.getDescricao());
             stmt.setBoolean(2, tarefa.getFinalizado());
-             stmt.setDate(3, new java.sql.Date(tarefa.getDataFinalizacao().getTimeInMillis()));
+             stmt.setDate(3 , new java.sql.Date(tarefa.getDataFinalizacao().getTimeInMillis()));
               stmt.execute();
             stmt.close();
         } else {
